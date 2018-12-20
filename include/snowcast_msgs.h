@@ -3,11 +3,15 @@
 
 #include <stdint.h>
 
-typedef HELLO_CMD 0
-typedef SET_STATION_CMD 1
-typedef WELCOME_REPLY 0
-typedef ANNOUNCE_REPLY 1
-typedef INVALID_CMD_REPLY 2
+/**
+ * Constants and structures used by the Snowcast protocol.
+ */
+
+#define HELLO_CMD 0
+#define SET_STATION_CMD 1
+#define WELCOME_REPLY 0
+#define ANNOUNCE_REPLY 1
+#define INVALID_CMD_REPLY 2
 
 typedef struct {
 	uint8_t cmd_type;
