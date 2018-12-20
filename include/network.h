@@ -18,11 +18,11 @@ int connect_tcp(char *dest_ip, char *port);
  */
 int connect_udp(char *dest_ip, char *port);
 /**
- * Attempts to return a UDP socket for the given IP address and port.
- * @param  dest_ip The destination IP
- * @param  port    The destination port
+ * Opens up a local port, binds it, and returns a socket descriptor from which
+ * data can be read from.
+ * @param  port    The port to bind on
  * @return         A socket descriptor on success, -1 otw
  */
-int setup_udp_socket(char *dest_ip, char *port);
+int bind_udp(char *port);
 
 #endif /* NETWORK_H */

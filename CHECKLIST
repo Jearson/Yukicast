@@ -1,9 +1,6 @@
 Order: Listener, then Client, then Server
 
-Listener:
-	- Open up a UDP port using c sockets
-	- Read whatever comes in from that UDP port to stdout
-
 Client:
 	- Open up a TCP port using c sockets
 	- Create the client half of the protocol
+
