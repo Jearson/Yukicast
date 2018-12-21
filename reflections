@@ -1,0 +1,9 @@
+1. udp ports do need to be bind()'ed after socket() to begin reading data on them
+2. you can read(), recv(), recvfrom() a UDP socket after it is established. The only
+difference between ithat read() is more general (sockets == file descriptors)),
+recv() allows you to specify options, and recvfrom() can also return information about
+the UDP sender.
+3. when you copy code from one function to another, and work from there, you incur a 
+certain risk of feeling really, really dumb afterwards. (i.e. in udp_bind() where I
+broke out of the loop before the socket() was bound)
+
