@@ -25,16 +25,15 @@ int main(int argc, char **argv) {
 	
 	// Read from the socket and write to stdout
 	char buf[BUFSZ];
-	int bytes_read;
-	while (1) {
-		bytes_read = read(lfd, buf, BUFSZ);
-		if (write(STDOUT_FILENO, buf, bytes_read) < 0) {
+	int bread, bwrit;
+	while ((bread = read(lfd, buf, BUFSZ)) > 0) {
+		if ((bwrit = write(STDOUT_FILENO, buf, bread) < 0)) {
 			fatal_fprintf(stderr, "Write failed: %s\n", strerror(errno));
 			return -1;
 		}
 	}
-	if (bytes_read < 0) {
-		fatal_fprintf(stderr, "Write failed: %s\n", strerror(errno));
+	if (bread < 0) {
+		fatal_fprintf(stderr, "Read failed: %s\n", strerror(errno));
 		return -1;
 	}
 	
