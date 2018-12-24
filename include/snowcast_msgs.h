@@ -7,12 +7,16 @@
  * Constants and structures used by the Snowcast protocol.
  */
 
+// Client message numbers
 #define HELLO_CMD 0
 #define SET_STATION_CMD 1
+
+// Server Message numbers
 #define WELCOME_REPLY 0
 #define ANNOUNCE_REPLY 1
 #define INVALID_CMD_REPLY 2
 
+// Message Structs
 typedef struct {
 	uint8_t cmd_type;
 	uint16_t udp_port;

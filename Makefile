@@ -8,10 +8,10 @@ FLAGS=-g -Wall -Wpedantic
 DEBUG_FLAGS=-D DEBUG
 
 BINS=snowcast_control snowcast_listener snowcast_server
-DEBUG_RULES=snowcast_control_dbg snowcast_listen_dbg snowcast_server_dbg
+DEBUG_RULES=snowcast_control_dbg snowcast_listener_dbg snowcast_server_dbg
 
 all: $(BINS)
-dbgall: $(DEBUG_RULES)
+alldbg: $(DEBUG_RULES)
 
 snowcast_control: $(CLI_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
 	@gcc $(FLAGS) -o $@ $^

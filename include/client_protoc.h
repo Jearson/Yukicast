@@ -34,7 +34,7 @@ int recv_reply_type(uint8_t *reply_type);
  * of stations the server supports.
  * @return              // TODO: Figure out how to report error types (enums?)
  */
-int recv_welcome(uint16_t *num_stations);
+int recv_rest_welcome(uint16_t *num_stations);
 
 /**
  * Receives the rest of an Announce message from the server
@@ -45,10 +45,40 @@ int recv_welcome(uint16_t *num_stations);
  * freed after use.
  * @return                // TODO: Figure out how to report error types (enums?)
  */
-int recv_announce(uint8_t *song_name_size, char **song_name);
+int recv_rest_announce(uint8_t *song_name_size, char **song_name);
 
 /**
  * Receives the rest of an Invalid Command message from the server
+ * @param  reply_str_size Pointer to uint8_t that will be filled with the number
+ * of bytes to received for the reply string.
+ * @param  reply_str      Pointer to a buffer that will be filled with a zstring
+ * of the reply string. The buffer is allocated dduring the call and should be
+ * freed after use.
+ * @return                // TODO: Figure out how to report error types (enums?)
+ */
+int recv_rest_invalid_cmd(uint8_t *reply_str_size, char **reply_str);
+
+/**
+ * Receives a Welcome message from the server.
+ * @param  num_stations Pointer to uint16_t that will be filled with the number
+ * of stations the server supports.
+ * @return              // TODO: Figure out how to report error types (enums?)
+ */
+int recv_welcome(uint16_t *num_stations);
+
+/**
+ * Receives an Announce message from the server
+ * @param  song_name_size Pointer to uint8_t that will be filled with the number
+ * of bytes to receive for the song name
+ * @param  song_name      Pointer to a buffer that will be filled with a zstring
+ * of the song name. The buffer is allocated during the call and should be 
+ * freed after use.
+ * @return                // TODO: Figure out how to report error types (enums?)
+ */
+int recv_announce(uint8_t *song_name_size, char **song_name);
+
+/**
+ * Receives an Invalid Command message from the server
  * @param  reply_str_size Pointer to uint8_t that will be filled with the number
  * of bytes to received for the reply string.
  * @param  reply_str      Pointer to a buffer that will be filled with a zstring

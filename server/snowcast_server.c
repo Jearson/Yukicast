@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../include/snowcast_server.h"
 #include "../include/client_protoc.h"
 #include "../include/network.h"
 #include "../include/debug.h"
@@ -19,8 +20,13 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	char *tcp_port = argv[1];
+
+	// Create stations for each file
+	int listen_sock;
 	// Create listening socket
 	// TODO:
+	listen_sock = setup_tcp_listen(tcp_port);
 	
 	// Begin listening for connections
 	// TODO:
