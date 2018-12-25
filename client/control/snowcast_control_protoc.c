@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../../include/client_protoc.h"
+#include "../../include/snowcast_control_protoc.h"
 #include "../../include/debug.h"
 
 /**

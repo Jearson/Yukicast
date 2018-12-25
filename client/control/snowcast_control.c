@@ -3,8 +3,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "../../include/snowcast_control_protoc.h"
 #include "../../include/snowcast_control.h"
-#include "../../include/client_protoc.h"
 #include "../../include/network.h"
 #include "../../include/debug.h"
 

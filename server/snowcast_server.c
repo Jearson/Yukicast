@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
+#include "../include/snowcast_server_protoc.h"
 #include "../include/snowcast_server.h"
-#include "../include/client_protoc.h"
 #include "../include/network.h"
 #include "../include/debug.h"
 

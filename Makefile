@@ -1,7 +1,7 @@
 CLI_SRC=client/control/*.c
 LIST_SRC=client/listener/*.c
 SERV_SRC=server/*.c
-COMMON_SRC=network/*.c
+COMMON_SRC=common/*.c
 DEBUG_SRC=debug/*
 
 FLAGS=-g -Wall -Wpedantic
