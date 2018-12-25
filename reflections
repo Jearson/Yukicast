@@ -6,4 +6,8 @@ the UDP sender.
 3. when you copy code from one function to another, and work from there, you incur a 
 certain risk of feeling really, really dumb afterwards. (i.e. in udp_bind() where I
 broke out of the loop before the socket() was bound)
+4. fgets() seems like the more correct way to get user input. Still need to figure out a sane solution that prevents multiple executions of a while loop body that relies on user input when the length of that user input is larger than the max of what fgets() can read (as determined by its second argument).
+5. enums where the nums are of uint8_t or any other non-int size are not possible
+6. strtol() error checking resource: https://stackoverflow.com/questions/26080829/detecting-strtol-failure
+
 

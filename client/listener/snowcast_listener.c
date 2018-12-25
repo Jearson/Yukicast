@@ -4,8 +4,8 @@
 #include <string.h>
 #include <sys/socket.h> 
 
-#include "../include/network.h"
-#include "../include/debug.h"
+#include "../../include/network.h"
+#include "../../include/debug.h"
 
 #define BUFSZ 1024
 

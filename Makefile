@@ -1,7 +1,7 @@
-CLI_SRC=client/snowcast_control.c
-LIST_SRC=client/snowcast_listener.c
-SERV_SRC=server/snowcast_server.c
-PROTOC_SRC=protoc/* network/*
+CLI_SRC=client/control/*.c
+LIST_SRC=client/listener/*.c
+SERV_SRC=server/*.c
+COMMON_SRC=network/*.c
 DEBUG_SRC=debug/*
 
 FLAGS=-g -Wall -Wpedantic
@@ -13,22 +13,22 @@ DEBUG_RULES=snowcast_control_dbg snowcast_listener_dbg snowcast_server_dbg
 all: $(BINS)
 alldbg: $(DEBUG_RULES)
 
-snowcast_control: $(CLI_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_control: $(CLI_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(FLAGS) -o $@ $^
 
-snowcast_listener: $(LIST_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_listener: $(LIST_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(FLAGS) -o $@ $^
 
-snowcast_server: $(SERV_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_server: $(SERV_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(FLAGS) -o $@ $^
 
-snowcast_control_dbg: $(CLI_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_control_dbg: $(CLI_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_control $^
 
-snowcast_listener_dbg: $(LIST_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_listener_dbg: $(LIST_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_listener $^
 
-snowcast_server_dbg: $(SERV_SRC) $(PROTOC_SRC) $(DEBUG_SRC)
+snowcast_server_dbg: $(SERV_SRC) $(COMMON_SRC) $(DEBUG_SRC)
 	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_server $^
 
 mc: snowcast_control_dbg

@@ -3,10 +3,10 @@
 #include <errno.h>
 #include <string.h>
 
-#include "../include/snowcast_control.h"
-#include "../include/client_protoc.h"
-#include "../include/network.h"
-#include "../include/debug.h"
+#include "../../include/snowcast_control.h"
+#include "../../include/client_protoc.h"
+#include "../../include/network.h"
+#include "../../include/debug.h"
 
 int main(int argc, char **argv) {
 	if (argc < 3) {

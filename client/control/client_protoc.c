@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "../include/client_protoc.h"
-#include "../include/debug.h"
+#include "../../include/client_protoc.h"
+#include "../../include/debug.h"
 
 /**
  * Sends a hello message to the server
