@@ -1,3 +1,6 @@
+#ifndef DEBUG_H
+#define DEBUG_H
+
 #include <stdio.h>
 
 #define KNRM  "\x1B[0m"
@@ -16,3 +19,5 @@ void warning_fprintf(FILE *stream, char *fmt, ...);
 void error_fprintf(FILE *stream, char *fmt, ...);
 void success_fprintf(FILE *stream, char *fmt, ...);
 void fatal_fprintf(FILE *stream, char *fmt, ...);
+
+#endif /* DEBUG_H */

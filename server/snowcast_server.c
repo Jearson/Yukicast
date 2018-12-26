@@ -7,13 +7,11 @@
 
 #include "../include/snowcast_server_protoc.h"
 #include "../include/snowcast_server.h"
+#include "../include/station.h"
+#include "../include/client.h"
+#include "../include/list.h"
 #include "../include/network.h"
 #include "../include/debug.h"
-
-// Want to send 128 KiB of song data per second
-#define KIB_RATE 128
-// Determines the buffer size of each station_t
-#define BPS	KIB_RATE * 1024
 
 
 pthread_t listener_thr;
@@ -98,7 +96,7 @@ void print_stations() {
 }
 
 void cleanup() {
-
+	info_fprintf(stderr, "NYI\n");
 }
 
 /*

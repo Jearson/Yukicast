@@ -1,3 +1,6 @@
+#ifndef STATION_H
+#define STATION_H
+
 #include <pthread.h>
 #include <stdio.h>
 #include "../include/list.h"
@@ -20,4 +23,7 @@ typedef struct station {
 } station_t;
 
 station_t *station_create();
-void station_destroy(station_t *station);
+void station_print(station_t *s);
+void station_destroy(station_t *s);
+
+#endif /* STATION_H */

@@ -9,8 +9,9 @@
  * @return          	// TODO: Figure out how to report error types (enums?)
  */
 int send_hello(uint16_t udp_port) {
-	info_fprintf(stderr, "NYI\n");
-	return -1;
+	
+
+	return 1;
 }
 
 /**

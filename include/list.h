@@ -1,3 +1,5 @@
+#ifndef LIST_H
+#define LIST_H
 
 /**
  * Doubly linked list implementation.
@@ -24,3 +26,5 @@ list_node_t *list_pop_head(list_t *list);
 list_node_t *list_pop_tail(list_t *list);
 list_node_t *list_remove(long int id);
 list_node_t *list_get(long int id);
+
+#endif /* LIST_H */

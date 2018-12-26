@@ -1,3 +1,6 @@
+#ifndef CLIENT_H
+#define CLIENT_H
+
 #include <sys/socket.h>
 #include <pthread.h>
 #include "../include/station.h"
@@ -17,3 +20,5 @@ typedef struct client {
 
 client_t *client_create(struct sockaddr ip_addr, int cmd_port);
 void client_destroy(client_t *client);
+
+#endif /* CLIENT_H */
