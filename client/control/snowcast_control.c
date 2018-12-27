@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "../../include/snowcast_control_protoc.h"
 #include "../../include/snowcast_control.h"
 #include "../../include/network.h"
 #include "../../include/debug.h"
+
+pthread_t server_msg_listener;
 
 int main(int argc, char **argv) {
 	if (argc < 3) {
@@ -33,10 +36,15 @@ int main(int argc, char **argv) {
 	send_hello(udp_port);
 	// Receive a Welcome
 	if (recv_welcome(&num_stations) < 0) {
-		fatal_fprintf(stderr, "Failed to receive Welcome message.");
+		fatal_fprintf(stderr, "Failed to receive Welcome message\n");
 		return -1;
 	}
 	fprintf(stdout, "There are %d stations.\n", num_stations);
+	// Start server messsage listener thread
+	if (pthread_create(
+		&server_msg_listener, NULL, &server_msg_listen, NULL) != 0) {
+		fatal_fprintf(stderr, "Failed to start listener for server messages\n");
+	}
 
 	// Begin the CLI
 	int run = 1;
@@ -66,6 +74,15 @@ int main(int argc, char **argv) {
 			run = 0;
 		}
 	}
-	fprintf(stdout, "Goodbye!\n");
-	
+	fprintf(stdout, "Goodbye!\n");	
+}
+
+/**
+ * For listening and acting on messages sent by the server
+ * @param  arg (unused)
+ * @return     (unused)
+ */
+void *server_msg_listen(void *arg) {
+	info_fprintf(stderr, "HI: server_msg_listen()\n");
+	return NULL;
 }

@@ -81,7 +81,7 @@ int recv_rest_invalid_cmd(uint8_t *reply_str_size, char **reply_str) {
  * @return              // TODO: Figure out how to report error types (enums?)
  */
 int recv_welcome(uint16_t *num_stations) {
-	info_fprintf(stderr, "NYI\n");
+	info_fprintf(stderr, "NYI: recv_welcome()\n");
 	return -1;
 }
 

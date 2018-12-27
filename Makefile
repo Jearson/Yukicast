@@ -4,7 +4,7 @@ SERV_SRC=server/*.c
 COMMON_SRC=common/*.c
 DEBUG_SRC=debug/*
 
-FLAGS=-g -Wall -Wpedantic
+FLAGS=-g -Wall -Wpedantic -pthread
 DEBUG_FLAGS=-D DEBUG
 
 BINS=snowcast_control snowcast_listener snowcast_server

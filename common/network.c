@@ -84,18 +84,26 @@ int setup_tcp_listen(char *port) {
 		return -1;
 	}
 
-	int sfd;
-	int listen_res;
+	int sfd, bind_res, listen_res;
 	for (rp = result; rp != NULL; rp = rp->ai_next) {
 		sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-		if (sfd == -1) {
+		if (sfd < 0) {
 			#ifdef DEBUG
 			warning_fprintf(stderr, "socket(): %s\n", strerror(errno));
 			#endif
 			continue;
 		}
 
-		listen_res = listen(sfd, 20);
+		bind_res = bind(sfd, rp->ai_addr, rp->ai_addrlen);
+		if (bind_res < 0) {
+			close(sfd);
+			#ifdef DEBUG
+			warning_fprintf(stderr, "listen(): %s\n", strerror(errno));
+			#endif
+            continue;
+        }
+
+        listen_res = listen(sfd, 20);
 		if (listen_res == 0) {
 			// Success!
 			break;

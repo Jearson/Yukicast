@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "../include/snowcast_server_protoc.h"
 #include "../include/snowcast_server.h"
@@ -29,7 +31,6 @@ int main(int argc, char **argv) {
 	// TODO:
 	
 	// Create listening socket
-	// TODO:
 	listen_sock = setup_tcp_listen(tcp_port);
 	
 	// Begin listening for connections
@@ -66,7 +67,6 @@ int main(int argc, char **argv) {
 }
 
 void *accept_connections(void *args) {
-	info_fprintf(stderr, "accept_connections() NYI\n");
 	struct sockaddr_storage *their_addr = NULL; // We can probably just malloc this once
 	socklen_t *addr_size = NULL;
 	int cli_sock = -1;
@@ -79,10 +79,14 @@ void *accept_connections(void *args) {
 			addr_size = malloc(sizeof(socklen_t));
 		}
 
+		info_fprintf(stderr, "Waiting for connection...\n");
 		if ((cli_sock = accept(listen_sock, 
 			(struct sockaddr*) their_addr, addr_size) < 0)) {
 			error_fprintf(stderr, "accept(): %s\n", strerror(errno));
 		} else {
+			struct sockaddr_in *cast = (struct sockaddr_in *) their_addr;
+			char *ip = inet_ntoa(cast->sin_addr);
+			info_fprintf(stderr, "Accepted connection from %s\n", ip);
 			// TODO: Create a client_t struct to keep track of the client
 			// and spawn off a thread on a routine that will serve it
 		}
