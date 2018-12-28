@@ -15,7 +15,7 @@ int marshall_hello(hello_msg_t *msg, char (*out)[HELLO_SZ]) {
 	if (!msg || !out) {
 		return -1;
 	}
-	uint8_t cmd_type = HELLO_CMD;
+	uint8_t cmd_type = msg->cmd_type;
 	uint16_t net_udp_port = htons(msg->udp_port);
 
 	int off = 0;
@@ -37,7 +37,7 @@ int marshall_welcome(welcome_msg_t *msg, char (*out)[WELCOME_SZ]) {
 	if (!msg || !out) {
 		return -1;
 	}
-	uint8_t reply_type = WELCOME_REPLY;
+	uint8_t reply_type = msg->reply_type;
 	uint16_t net_num_stations = htons(msg->num_stations);
 
 	int off = 0;
@@ -59,7 +59,7 @@ int marshall_set_station(set_station_msg_t *msg, char (*out)[SET_STATION_SZ]) {
 	if (!msg || !out) {
 		return -1;
 	}
-	uint8_t cmd_type = SET_STATION_CMD;
+	uint8_t cmd_type = msg->cmd_type;
 	uint16_t net_station_num = htons(msg->station_num);
 
 	int off = 0;
@@ -73,16 +73,16 @@ int marshall_set_station(set_station_msg_t *msg, char (*out)[SET_STATION_SZ]) {
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
- * @param  out a buffer of sizeof(announce_msg_t) bytes that will contaion
- * the network byte representation
+ * @param  out a buffer of sizeof(announce_msg_t) + song_name_size 
+ * bytes that will contaion the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_announce(announce_msg_t *msg, char (*out)[ANNOUNCE_SZ]) {
+int marshall_announce(announce_msg_t *msg, char **out) {
 	if (!msg || !out) {
 		return -1;
 	}
-	uint8_t reply_type = ANNOUNCE_REPLY;
-	uint8_t net_song_name_size = msg->song_name_size; // single byte, so no flip I think
+	uint8_t reply_type = msg->reply_type;
+	uint8_t net_song_name_size = msg->song_name_size; // single byte, so no flip
 	char *net_song_name = msg->song_name;
 
 	int off = 0;
@@ -101,12 +101,12 @@ int marshall_announce(announce_msg_t *msg, char (*out)[ANNOUNCE_SZ]) {
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char (*out)[INVALID_CMD_SZ]) {
+int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char **out) {
 	if (!msg || !out) {
 		return -1;
 	}
 	uint8_t reply_type = INVALID_CMD_REPLY;
-	uint8_t net_reply_str_size = msg->reply_str_size; // single byte, so no flip I think
+	uint8_t net_reply_str_size = msg->reply_str_size; // single byte, so no flip
 	char *net_reply_str = msg->reply_str;
 
 	int off = 0;
@@ -119,9 +119,9 @@ int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char (*out)[INVALID_CMD_SZ]) {
 }
 
 // The unmarshall commands below might not be used becuase of the variable
-// length nature of some of the messages-- it's unreasonable to assume that
+// length nature of some of the messages-- we can't assume that
 // we would be able to receive all of the bytes for a struct without first 
-// interpretion of that data whatsoever. 
+// interpreting of that data whatsoever. 
 
 /**
  * Marshalls network bytes into its struct representation

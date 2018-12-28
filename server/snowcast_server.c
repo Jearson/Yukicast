@@ -15,10 +15,6 @@
 #include "../include/network.h"
 #include "../include/debug.h"
 
-
-// Wait 100ms before timing out a receive call
-const struct timeval RECV_TIMEOUT = { .tv_sec = 0, .tv_usec = 1000000 };
-
 pthread_t listener_thr;
 int listen_sock;
 

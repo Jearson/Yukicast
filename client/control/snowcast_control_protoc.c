@@ -114,9 +114,9 @@ int recv_reply_type(int sfd, uint8_t *reply_type) {
 
 /**
  * Receives the rest of a Welcome message from the server.
- * @param  num_stations Pointer to uint16_t that will be filled with the number
- * of stations the server supports.
- * @return             0 on success, -1 otw
+ * @param  sfd the socket to receive a message on
+ * @param  msg welcome_msg_t to fill
+ * @return     0 on success, -1 otw
  */
 int recv_rest_welcome(int sfd, welcome_msg_t *msg) {
 	// Set the timeout before receiving
@@ -144,13 +144,10 @@ int recv_rest_welcome(int sfd, welcome_msg_t *msg) {
 }
 
 /**
- * Receives the rest of an Announce message from the server
- * @param  song_name_size Pointer to uint8_t that will be filled with the number
- * of bytes to receive for the song name
- * @param  song_name      Pointer to a buffer that will be filled with a zstring
- * of the song name. The buffer is allocated during the call and should be 
- * freed after use.
- * @return                0 on success, -1 otw
+ * Receives the rest of an Announce from the server.
+ * @param  sfd the socket to receive a message on
+ * @param  msg announce_msg_t to fill
+ * @return     0 on success, -1 otw
  */
 int recv_rest_announce(int sfd, announce_msg_t *msg) {
 	// Set the timeout before receiving
@@ -204,13 +201,10 @@ int recv_rest_announce(int sfd, announce_msg_t *msg) {
 }
 
 /**
- * Receives the rest of an Invalid Command message from the server
- * @param  reply_str_size Pointer to uint8_t that will be filled with the number
- * of bytes to received for the reply string.
- * @param  reply_str      Pointer to a buffer that will be filled with a zstring
- * of the reply string. The buffer is allocated dduring the call and should be
- * freed after use.
- * @return                0 on success, -1 otw
+ * Receives the rest of an Invalid Command message from the server.
+ * @param  sfd the socket to receive a message on
+ * @param  msg invalid_cmd_msg_t to fill
+ * @return     0 on success, -1 otw
  */
 int recv_rest_invalid_cmd(int sfd, invalid_cmd_msg_t *msg) {
 	// Set the timeout before receiving

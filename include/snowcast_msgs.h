@@ -89,7 +89,7 @@ int marshall_set_station(set_station_msg_t *msg, char (*out)[SET_STATION_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_announce(announce_msg_t *msg, char (*out)[ANNOUNCE_SZ]);
+int marshall_announce(announce_msg_t *msg, char **out);
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
@@ -97,7 +97,7 @@ int marshall_announce(announce_msg_t *msg, char (*out)[ANNOUNCE_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char (*out)[INVALID_CMD_SZ]);
+int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char **out);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
