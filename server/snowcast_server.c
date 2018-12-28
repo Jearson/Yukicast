@@ -16,6 +16,9 @@
 #include "../include/debug.h"
 
 
+// Wait 100ms before timing out a receive call
+const struct timeval RECV_TIMEOUT = { .tv_sec = 0, .tv_usec = 1000000 };
+
 pthread_t listener_thr;
 int listen_sock;
 
@@ -102,6 +105,16 @@ void print_stations() {
 void cleanup() {
 	info_fprintf(stderr, "NYI\n");
 }
+
+/*
+// Set the timeout for the socket
+    if (setsockopt(sfd, SOL_SOCKET, SO_RCVTIMEO, &RECV_TIMEOUT, 
+    	sizeof(RECV_TIMEOUT)) != 0) {
+    	fatal_fprintf(stderr, "Failed to set timeout on TCP socket: %s\n", 
+    		strerror(errno));
+    	return -1;
+    }
+ */
 
 /*
 // UDP connect to the listener (connecting makes sending data faster)

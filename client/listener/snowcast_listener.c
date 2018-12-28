@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
 	}
 
 	char *udpport = argv[1];
-
 	int lfd;
 	if ((lfd = bind_udp(udpport)) < 0) {
 		fatal_fprintf(stderr, "Failed to open local socket\n");

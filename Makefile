@@ -14,22 +14,22 @@ all: $(BINS)
 alldbg: $(DEBUG_RULES)
 
 snowcast_control: $(CLI_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(FLAGS) -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 snowcast_listener: $(LIST_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(FLAGS) -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 snowcast_server: $(SERV_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(FLAGS) -o $@ $^
+	gcc $(FLAGS) -o $@ $^
 
 snowcast_control_dbg: $(CLI_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_control $^
+	gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_control $^
 
 snowcast_listener_dbg: $(LIST_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_listener $^
+	gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_listener $^
 
 snowcast_server_dbg: $(SERV_SRC) $(COMMON_SRC) $(DEBUG_SRC)
-	@gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_server $^
+	gcc $(DEBUG_FLAGS) $(FLAGS) -o snowcast_server $^
 
 mc: snowcast_control_dbg
 	./snowcast_control localhost 1234 2345

@@ -9,6 +9,28 @@
 
 #include "../include/debug.h"
 
+/**
+ * Wrapper around recv that ensures n bytes are received from the given
+ * socket, returning a predefined code 
+ * @param  sockfd the socket to receive on
+ * @param  buf  buffer of size n where bytes will be written to
+ * @param  n      the number of bytes to receive
+ * @return        Returns the size of a reply type on success, 0 if 
+ * the connection was closed, or -1 on error, with errno set according to
+ * the man page for recv().
+ */
+int recv_n_bytes(int sockfd, void *bytes, int n) {
+	int bytes_recvd = 0;
+	int recv_res; 
+	while (bytes_recvd < n) {
+		recv_res = recv(sockfd, bytes, n, 0);
+		if (recv_res <= 0) {
+			return recv_res;
+		}
+		bytes_recvd += recv_res;
+	}
+	return n;
+}
 
 /**
  * Attempts to establish a TCP connection on the given destination IP address

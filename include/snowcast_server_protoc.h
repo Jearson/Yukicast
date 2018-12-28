@@ -1,10 +1,8 @@
-#ifndef SERVER_PROTOC_H
-#define SERVER_PROTOC_H
+#ifndef SNOWCAST_SERVER_PROTOC_H
+#define SNOWCAST_SERVER_PROTOC_H
 
+#include <sys/time.h>
 #include "snowcast_msgs.h"
-
-// Number of miliseconds to wait before timing out
-#define recv_rest_TIMEOUT 100
 
 /**
  * Receives the command number of a message sent by the client
@@ -60,4 +58,4 @@ int send_announce(uint8_t song_name_size, char *song_name);
  */
 int send_invalid_cmd(uint8_t reply_str_size, char *reply_str);
 
-#endif /* SERVER_PROTOC_H */
+#endif /* SNOWCAST_SERVER_PROTOC_H */

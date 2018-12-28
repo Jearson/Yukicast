@@ -44,11 +44,19 @@ typedef struct  __attribute__ ((__packed__)) {
 	char *reply_str;
 } invalid_cmd_msg_t;
 
+// Used for sending messages
 #define HELLO_SZ sizeof(hello_msg_t)
 #define WELCOME_SZ sizeof(welcome_msg_t)
 #define SET_STATION_SZ sizeof(set_station_msg_t)
-#define ANNOUNCE_SZ sizeof(hello_msg_t)
-#define INVALID_CMD_SZ sizeof(hello_msg_t)
+#define ANNOUNCE_SZ sizeof(announce_msg_t)
+#define INVALID_CMD_SZ sizeof(invalid_cmd_msg_t)
+// Used for receiving messages
+// Messages are first received by their type, then by the rest of the message
+#define REST_HELLO_SZ HELLO_SZ - sizeof(uint8_t)
+#define REST_WELCOME_SZ WELCOME_SZ - sizeof(uint8_t)
+#define REST_SET_STATION_SZ SET_STATION_SZ - sizeof(uint8_t)
+#define REST_ANNOUNCE_SZ ANNOUNCE_SZ - sizeof(uint8_t)
+#define REST_INVALID_CMD_SZ INVALID_CMD_SZ - sizeof(uint8_t)
 
 /**
  * Converts the message into its network byte representation
@@ -57,7 +65,7 @@ typedef struct  __attribute__ ((__packed__)) {
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_hello(hello_msg_t *msg, char *out[HELLO_SZ]);
+int marshall_hello(hello_msg_t *msg, char (*out)[HELLO_SZ]);
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
@@ -65,7 +73,7 @@ int marshall_hello(hello_msg_t *msg, char *out[HELLO_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_welcome(welcome_msg_t *msg, char *out[WELCOME_SZ]);
+int marshall_welcome(welcome_msg_t *msg, char (*out)[WELCOME_SZ]);
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
@@ -73,7 +81,7 @@ int marshall_welcome(welcome_msg_t *msg, char *out[WELCOME_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_set_station(set_station_msg_t *msg, char *out[SET_STATION_SZ]);
+int marshall_set_station(set_station_msg_t *msg, char (*out)[SET_STATION_SZ]);
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
@@ -81,7 +89,7 @@ int marshall_set_station(set_station_msg_t *msg, char *out[SET_STATION_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_announce(announce_msg_t *msg, char *out[ANNOUNCE_SZ]);
+int marshall_announce(announce_msg_t *msg, char (*out)[ANNOUNCE_SZ]);
 /**
  * Converts the message into its network byte representation
  * @param  msg the struct to marshal
@@ -89,7 +97,7 @@ int marshall_announce(announce_msg_t *msg, char *out[ANNOUNCE_SZ]);
  * the network byte representation
  * @return     0 on success, -1 on failure
  */
-int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char *out[INVALID_CMD_SZ]);
+int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char (*out)[INVALID_CMD_SZ]);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
@@ -97,7 +105,7 @@ int marshall_invalid_cmd(invalid_cmd_msg_t *msg, char *out[INVALID_CMD_SZ]);
  * @return       a pointer to a malloc'd hello_msg_t from the given bytes or
  * NULL on error
  */
-hello_msg_t *unmarshall_hello(char *bytes[HELLO_SZ]);
+hello_msg_t *unmarshall_hello(char (*bytes)[HELLO_SZ]);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
@@ -105,7 +113,7 @@ hello_msg_t *unmarshall_hello(char *bytes[HELLO_SZ]);
  * @return       a pointer to a malloc'd welcome_msg_t from the given bytes or
  * NULL on error
  */
-welcome_msg_t *unmarshall_welcome(char *bytes[WELCOME_SZ]);
+welcome_msg_t *unmarshall_welcome(char (*bytes)[WELCOME_SZ]);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
@@ -113,7 +121,7 @@ welcome_msg_t *unmarshall_welcome(char *bytes[WELCOME_SZ]);
  * @return       a pointer to a malloc'd set_station_msg_t from the given bytes or
  * NULL on error
  */
-set_station_msg_t *unmarshall_set_station(char *bytes[SET_STATION_SZ]);
+set_station_msg_t *unmarshall_set_station(char (*bytes)[SET_STATION_SZ]);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
@@ -121,7 +129,7 @@ set_station_msg_t *unmarshall_set_station(char *bytes[SET_STATION_SZ]);
  * @return       a pointer to a malloc'd announce_msg_t from the given bytes or
  * NULL on error
  */
-announce_msg_t *unmarshall_announce(char *bytes[ANNOUNCE_SZ]);
+announce_msg_t *unmarshall_announce(char (*bytes)[ANNOUNCE_SZ]);
 /**
  * Marshalls network bytes into its struct representation
  * @param  bytes pointer to a buffer containing the network-order bytes 
@@ -129,6 +137,6 @@ announce_msg_t *unmarshall_announce(char *bytes[ANNOUNCE_SZ]);
  * @return       a pointer to a malloc'd invalid_cmd_msg_t from the given bytes or
  * NULL on error
  */
-invalid_cmd_msg_t *unmarshall_invalid_cmd(char *bytes[INVALID_CMD_SZ]);
+invalid_cmd_msg_t *unmarshall_invalid_cmd(char (*bytes)[INVALID_CMD_SZ]);
 
 #endif /* SNOWCAST_MSGS_H */

@@ -2,6 +2,17 @@
 #define NETWORK_H
 
 /**
+ * Wrapper around recv that ensures n bytes are received from the given
+ * socket, otherwise a 0 or -1 is reported on close or error, respectively.
+ * @param  sockfd the socket to receive on
+ * @param  buf  buffer of size n where bytes will be written to
+ * @param  n      the number of bytes to receive
+ * @return        n on success, 0 if the conneciton had been closed, or 
+ * -1 on error
+ */
+int recv_n_bytes(int sockfd, void *bytes, int n);
+
+/**
  * Establishes a TCP connection to the given destination IP address
  * and port.
  * 
@@ -35,6 +46,5 @@ int connect_udp(char *dest_ip, char *port);
  * @return         A socket descriptor on success, -1 otw
  */
 int bind_udp(char *port);
-
 
 #endif /* NETWORK_H */
