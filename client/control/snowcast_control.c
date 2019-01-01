@@ -32,29 +32,11 @@ int main(int argc, char **argv) {
 	success_fprintf(stderr, "Established TCP connection to %s:%s\n", 
 				servname, servport);
     
-    // Start server messsage listener thread
+    // Start server messsage listener thread, which will start the cli thread
+    // after receving the welcome reply
 	if (pthread_create(
-		&server_listener_thr, NULL, &server_msg_listen, NULL) != 0) {
+		&server_listener_thr, NULL, &server_msg_listen, &udp_port) != 0) {
 		fatal_fprintf(stderr, "Failed to start listener for server messages\n");
-		return -1;
-	}
-
-	// Hello the server 
-	#ifdef DEBUG
-	info_fprintf(stderr, "Sending hello...\n");
-	#endif
-	if (send_hello(sfd, udp_port) < 0) {
-		pthread_cancel(server_listener_thr);
-		pthread_join(server_listener_thr, NULL);
-		return -1;
-	}
-
-	// Begin the CLI thread
-	if (pthread_create(
-		&cli_thr, NULL, &do_cli, &udp_port) != 0) {
-		fatal_fprintf(stderr, "Failed to start CLI thread\n");
-		pthread_cancel(server_listener_thr);
-		pthread_join(server_listener_thr, NULL);
 		return -1;
 	}
 
@@ -87,7 +69,7 @@ void *do_cli(void *arg) {
 					// Try to interpret the string as a number
 					station_num = strtol(buf, &strtol_ptr, 10);
 					if (station_num == 0 && errno != 0) {
-						error_fprintf(stderr, "%s", strerror(station_num));
+						error_fprintf(stderr, "%s\n", strerror(station_num));
 						errno = 0;
 					} else if (strtol_ptr == buf) {
 						error_fprintf(stderr, "Invalid command\n");
@@ -115,6 +97,14 @@ void *do_cli(void *arg) {
  * @return     (unused)
  */
 void *server_msg_listen(void *arg) {
+	int udp_port = *(int *) arg;
+	// Hello the server 
+	if (send_hello(sfd, udp_port) < 0) {
+		error_fprintf(stderr, "Failed to send Hello\n");
+		return NULL;
+	}
+	info_fprintf(stderr, "Hello Sent. Waiting for Welcome...\n");
+
 	welcome_msg_t welcome;
 	announce_msg_t announce;
 	invalid_cmd_msg_t invalid_cmd;
@@ -124,7 +114,6 @@ void *server_msg_listen(void *arg) {
 	uint16_t num_stations;
 	while (run) {
 		if (recv_reply_type(sfd, &reply_type) < 0) {
-			// No longer listening
 			return NULL;
 		}
 		switch (reply_type) {
@@ -143,8 +132,14 @@ void *server_msg_listen(void *arg) {
 						run = 0;
 					}
 					num_stations = welcome.num_stations;
-					fprintf(stdout, "There are %d stations.\n", num_stations);
+					info_fprintf(stdout, "There are %d stations.\n", num_stations);
 					welcome_recvd = 1;
+					// Begin the CLI thread
+					if (pthread_create(&cli_thr, NULL, &do_cli, &udp_port) != 0) {
+						fatal_fprintf(stderr, "Failed to start CLI thread\n");
+						run = 0;
+						break;
+					}
 				}
 			break;
 			case ANNOUNCE_REPLY:

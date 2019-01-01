@@ -23,7 +23,9 @@ typedef struct station {
 } station_t;
 
 station_t *station_create();
-void station_print(station_t *s);
-void station_destroy(station_t *s);
+int station_read_data(station_t *station);
+int station_await_data(station_t *station);
+void station_print(station_t *station);
+void station_destroy(station_t *station);
 
 #endif /* STATION_H */
