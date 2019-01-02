@@ -15,12 +15,13 @@
 #include "../include/network.h"
 #include "../include/debug.h"
 
+// Main threads
 pthread_t cli_thr;
 pthread_t listen_thr;
-int listen_sock;
-int next_client_id = 0;
+
+// Station info
 uint16_t num_stations = 0;
-station_t *stations;
+station_t **stations;
 
 int main(int argc, char **argv) {
 	if (argc < 3) {
@@ -31,14 +32,27 @@ int main(int argc, char **argv) {
 	char *tcp_port = argv[1];
 
 	// Create stations for each file
-	// TODO:
-	num_stations = 0;
+	char *filename;
+	station_t *station;
+	for (int i=2; i < argc; i++) {
+		filename = argv[i];
+		if ((station = station_create(filename)) == NULL) {
+			error_fprintf(stderr, 
+				"Failed to create station for '%s'\n", filename);
+		} 
+		else {
+			stations[num_stations++] = station;
+		}
+	}
+
 	// Create listening socket
-	listen_sock = setup_tcp_listen(tcp_port);
+	int listen_sock = setup_tcp_listen(tcp_port);
 	
 	// Begin listening for connections
-	if (pthread_create(&listen_thr, NULL, &accept_connections, NULL) != 0) {
-		fatal_fprintf(stderr, "Failed to start listener for client connections\n");
+	if (pthread_create(&listen_thr, NULL, 
+		&accept_connections, &listen_sock) != 0) {
+		fatal_fprintf(stderr, 
+			"Failed to start listener for client connections\n");
 		return -1;
 	}
 	
@@ -50,34 +64,36 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	// Join threads and cleanup
 	pthread_join(cli_thr, NULL);
 	pthread_join(listen_thr, NULL);
-	fprintf(stdout, "Goodbye!\n");
+	fprintf(stdout, "Cleaning up...\n");
 	cleanup();
+	fprintf(stdout, "Goodbye!\n");
 	return 0;
 }
 
 void *do_cli(void *arg) {
-	// Begin CLI
 	int run = 1;
 	char buf[16];
-	// If the user gives more than sizeof(buf)-1 chars, 
-	// the body of the while loop executes more than once
+	// If the user gives more than sizeof(buf)-1 chars, the body of the 
+	// while loop executes more than once
 	while (run) {
 		if (fgets(buf, sizeof(buf), stdin)) {
 			switch (buf[0]) {
 				case '\n':
-				// do nothing
+					break;
 				case 'p':
-				print_stations();
-				break;
+					print_stations();
+					break;
 				case 'q':
-				run = 0;
-				break;
+					run = 0;
+					break;
 				default:
 					fprintf(stdout, "Commands are 'p', 'q'\n");
 			}
-		} else {
+		} 
+		else {
 			run = 0;
 		}
 	}
@@ -86,31 +102,40 @@ void *do_cli(void *arg) {
 }
 
 void *accept_connections(void *arg) {
+	int listen_sock = *(int *) arg;
 	struct sockaddr_storage their_addr;
 	socklen_t addr_size;
-	int cli_sock = -1, run = 1;
-	client_t *client = NULL;
+	int cli_sock, run = 1;
+	client_t *client;
+
 	while (run) {
+		// Reset
 		memset(&their_addr, 0, sizeof(their_addr));
 		client = NULL;
 		addr_size = sizeof(their_addr);
+
+		// Accept connections
 		info_fprintf(stderr, "Waiting for a connection...\n");
-		// Accept the connections
-		if ((cli_sock = accept(listen_sock, 
-			(struct sockaddr*) &their_addr, &addr_size) == -1)) {
-			error_fprintf(stderr, "accept_connections(): %s\n", strerror(errno));
+		cli_sock = accept(listen_sock, 
+			(struct sockaddr*) &their_addr, &addr_size);
+		if (cli_sock == -1) {
+			error_fprintf(stderr, "accept_connections(): %s\n", 
+				strerror(errno));
 		} else {
-			char *ip = inet_ntoa(((struct sockaddr_in *) &their_addr)->sin_addr);
-			info_fprintf(stderr, "Accepted connection from %s\n", ip);
 			// Create client representation
-			client_t *client;
-			if ((client = client_create(ip, cli_sock)) == NULL) {
-				error_fprintf(stderr, "Failed to create client for %s. Closing connection\n", ip);
+			if ((client = client_create(client->ip_addr, cli_sock)) == NULL) {
+				error_fprintf(stderr, "Failed to create client for %s. "
+					"Closing connection\n", client->ip_addr);
 			}
-			info_fprintf(stderr, "Client IP  %s assigned ID = %d\n", client->id);
-			// Begin serving the client
-			if (pthread_create(&client->cmd_thr, NULL, &serve_client, client) != 0) {
-				fatal_fprintf(stderr, "Failed to start thread for client <put cli addr here>\n");
+			info_fprintf(stderr, "Accepted connection from %s\n", 
+				client->ip_addr);
+			info_fprintf(stderr, "Client IP %s assigned ID = %d\n", 
+				client->id);
+			// Spawn thread to begin serving the client
+			if (pthread_create(&client->cmd_thr, NULL, 
+				&serve_client, client) != 0) {
+				fatal_fprintf(stderr, "Failed to start thread for client "
+					"ID: %s, IP: %d\n", client->id, client->ip_addr);
 			}
 		}
 	}
@@ -121,17 +146,11 @@ void *accept_connections(void *arg) {
 void *serve_client(void *arg) {
 	client_t *client = (client_t* ) arg;
 	int cmd_sock = client->cmd_sock;
-	
-	// Send Welcome
-	if (send_welcome(cmd_sock, num_stations) < 0) {
-		error_fprintf(stderr, "Failed to send Hello\n");
-		return NULL;
-	}
 
 	hello_msg_t hello;
 	set_station_msg_t set_station;
 
-	int hello_recvd = 0, first_set_station_recvd = 0, run = 1;
+	int first_set_station = 0, run = 1;
 	uint8_t cmd_type;
 	while (run) {
 		// Begin listening for messages
@@ -139,6 +158,7 @@ void *serve_client(void *arg) {
 			error_fprintf(stderr, "Failed to parse command type\n");
 			continue;
 		}
+
 		switch (cmd_type) {
 			case HELLO_CMD:
 			memset(&hello, 0, sizeof(hello_msg_t));
@@ -149,44 +169,56 @@ void *serve_client(void *arg) {
 				run = 0;
 				break;
 			}
-
-			if (hello_recvd) {
-				// TODO: handle
-			} else {
-				// TODO: handle
+			// Send back Welcome on non-gratuitous Hello
+			if (client->udp_sock == -1) {
+				if (send_welcome(cmd_sock, num_stations) < 0) {
+					error_fprintf(stderr, "Failed to send Welcome. Closing "
+						"connection...\n");
+					run = 0;
+					break;
+				}
+			}
+			else {
+				info_fprintf(stderr, "Gratuitous Hello. Ignoring....\n");
+				char msg[] = "Gratuitous Hello Received";
+				send_invalid_cmd(cmd_sock, sizeof(msg), msg);
 			}
 			break;
+
 			case SET_STATION_CMD:
 			memset(&set_station, 0, sizeof(set_station_msg_t));
-			// Receive the rest of the set station command
+			// Receive the rest of the set station
 			if (recv_rest_set_station(cmd_sock, &set_station) != 0) {
 				error_fprintf(stderr, "Failed to receive rest of Set Station "
 					"message. Closing connection...\n");
 				run = 0;
 				break;
 			}
-			// TODO: Determine if the set station command is for a valid station
 			if (set_station.station_num >= num_stations) {
-				// TODO: Send back an error message to the client
+				char msg[] = "Station number out of range";
+				send_invalid_cmd(cmd_sock, sizeof(msg), msg);
 				break;
 			}
 
 			// Set the client station
-			client_set_station(&stations[set_station.station_num]);
+			client_set_station(stations[set_station.station_num]);
 
-			// If this is the first time a valid station was received, 
-			// begin the streamer thread
-			if (!first_set_station_recvd) {
+			// If this is the first time we set a station, begin the 
+			// streamer thread
+			if (!first_set_station) {
 				info_fprintf(stderr, "First Set Station received\n");
-				first_set_station_recvd = 1;
-				if (pthread_create(&client->streamer_thr, NULL, &stream_data, client) != 0) {
-					error_fprintf(stderr, "Failed to create streamer thread for "
-						"client id %d, IP %s. Closing connection\n", client->id, client->ip_addr);
+				first_set_station = 1;
+				if (pthread_create(&client->streamer_thr, NULL, 
+					&stream_data, client) != 0) {
+					error_fprintf(stderr, "Failed to create streamer thread "
+						"for client ID %d, IP %s. Closing connection\n", 
+						client->id, client->ip_addr);
 				}
 			}
 			break;
 			default:
-				error_fprintf(stderr, "Invalid command received: %d\n", cmd_type);
+				error_fprintf(stderr, "Invalid command received: %d\n", 
+					cmd_type);
 		}
 	}
 	client_destroy(client);
@@ -195,23 +227,41 @@ void *serve_client(void *arg) {
 
 void *stream_data(void *arg) {
 	client_t *client = (client_t *) arg;
-	station_t *curr_station = NULL;
+	int cmd_sock = client->cmd_sock;
 	char song_data[DATA_BUFSZ];
+	station_t *station = NULL;
 	int bytes_read = 0;
-	int run = 1;
+	int run = 1, announce = 1;
 	while (run) {
-		curr_station = client_curr_station(client);
-		bytes_read = station_read_data(curr_station); // Returns the number of bytes read
+		station = client_get_curr_station(client);
+		// TODO: Announce if we've changed stations
+		// if (prev_station_id != curr_station_id) {
+		// 	announce = 1;
+		// }
+		// TODO: How to figure out if the file's looped?
+		// - Have the station thread set station variables that each
+		// streamer will read
+		// TODO: Figure out station buffer details
+		if (announce) {
+			if (send_announce(cmd_sock, 
+				station->song_name_size, station->song_name) < 0) {
+				warning_fprintf(stderr, "Failed to send Announce.\n");
+			}
+			announce = 0;
+		}
+		
+		// Read in the station data to local buffer
+		bytes_read = station_read_data(station);
 		if (bytes_read < 0) {
 			// TODO: Handle error
 		}
+	
 		// Write out data to socket
 		client_send_data(client, song_data, bytes_read);
-		
+
 		// Wait until more data is fetched
-		station_await_data(curr_station);
+		station_await_data(station);
 	}
-	// Begin streaming data
 	return NULL;
 }
 

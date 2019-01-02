@@ -23,7 +23,7 @@ typedef struct client {
 } client_t;
 
 client_t *client_create(char *ip, int cmd_sock);
-station_t *client_curr_station(client_t *client);
+station_t *client_get_curr_station(client_t *client);
 void client_set_station(station_t *station);
 int client_send_data(client_t *client, void *data, int bytes);
 void client_destroy(client_t *client);

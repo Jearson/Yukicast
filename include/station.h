@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <arpa/inet.h>
 #include "../include/list.h"
 
 /**
@@ -12,9 +13,10 @@
 #define DATA_BUFSZ KIB_RATE * 1024
 
 typedef struct station {
+	int id;
 	FILE *song_file;
 	char *song_name;
-	int song_name_size;
+	uint8_t song_name_size;
 	char data_buf[DATA_BUFSZ];
 	list_t listeners;
 
@@ -22,7 +24,7 @@ typedef struct station {
 	pthread_cond_t data_rdy;
 } station_t;
 
-station_t *station_create();
+station_t *station_create(char *filename);
 int station_read_data(station_t *station);
 int station_await_data(station_t *station);
 void station_print(station_t *station);
